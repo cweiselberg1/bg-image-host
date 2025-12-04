@@ -3,19 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Untitled</title>
+    <title>Code Art Gallery</title>
     <style>
-        
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
+            background: #0a0a0a;
             min-height: 100vh;
-            background: #000 url('IMG_1763.JPG') center center no-repeat;
-            background-size: 50%;
+            font-family: 'Courier New', monospace;
+            color: #fff;
+            overflow-x: hidden;
         }
-        
+
+        h1 {
+            text-align: center;
+            padding: 40px;
+            font-size: clamp(1.5rem, 5vw, 3rem);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #fff, #888, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .art-piece {
+            position: relative;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .art-piece img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+
+        .art-piece .label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .art-piece:hover .label {
+            transform: translateY(0);
+        }
+
+        /* EFFECT 1: Glitch */
+        .glitch {
+            animation: glitch-skew 1s infinite linear alternate-reverse;
+        }
+        .glitch:hover img {
+            animation: glitch-anim 0.3s infinite;
+        }
+        @keyframes glitch-anim {
+            0% { clip-path: inset(40% 0 61% 0); transform: translate(-2px, 2px); }
+            20% { clip-path: inset(92% 0 1% 0); transform: translate(1px, -1px); }
+            40% { clip-path: inset(43% 0 1% 0); transform: translate(-1px, 2px); }
+            60% { clip-path: inset(25% 0 58% 0); transform: translate(2px, 1px); }
+            80% { clip-path: inset(54% 0 7% 0); transform: translate(-2px, -1px); }
+            100% { clip-path: inset(58% 0 43% 0); transform: translate(1px, 2px); }
+        }
+
+        /* EFFECT 2: RGB Split */
+        .rgb-split:hover img {
+            filter: none;
+        }
+        .rgb-split::before,
+        .rgb-split::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: inherit;
+            background-size: cover;
+            background-position: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .rgb-split:hover::before {
+            opacity: 0.7;
+            mix-blend-mode: multiply;
+            background-color: cyan;
+            transform: translate(-5px, -3px);
+        }
+        .rgb-split:hover::after {
+            opacity: 0.7;
+            mix-blend-mode: multiply;
+            background-color: red;
+            transform: translate(5px, 3px);
+        }
+
+        /* EFFECT 3: Pixelate */
+        .pixelate img {
+            transition: filter 0.3s ease;
+        }
+        .pixelate:hover img {
+            filter: contrast(1.5) saturate(1.5);
+            image-rendering: pixelated;
+            transform: scale(1.5);
+        }
+
+        /* EFFECT 4: Invert + Hue Rotate */
+        .invert-hue:hover img {
+            filter: invert(1) hue-rotate(180deg);
+        }
+
+        /* EFFECT 5: Scanlines */
+        .scanlines::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.3) 2px,
+                rgba(0,0,0,0.3) 4px
+            );
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 10;
+        }
+        .scanlines:hover::before {
+            opacity: 1;
+            animation: scanline-move 0.1s infinite linear;
+        }
+        @keyframes scanline-move {
+            from { transform: translateY(0); }
+            to { transform: translateY(4px); }
+        }
+
+        /* EFFECT 6: Zoom + Blur */
+        .zoom-blur:hover img {
+            transform: scale(1.3);
+            filter: blur(2px) brightness(1.2);
+        }
+
+        /* EFFECT 7: Duotone */
+        .duotone {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+        .duotone img {
+            mix-blend-mode: luminosity;
+        }
+        .duotone:hover img {
+            mix-blend-mode: normal;
+        }
+
+        /* EFFECT 8: ASCII Preview (fake) */
+        .ascii-style:hover img {
+            filter: contrast(2) grayscale(1);
+            opacity: 0.8;
+        }
+        .ascii-style::after {
+            content: '01001000 01100101 01101100 01101100 01101111';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.6rem;
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-family: monospace;
+            white-space: nowrap;
+            z-index: 20;
+        }
+        .ascii-style:hover::after {
+            opacity: 1;
+        }
+
+        /* Click to fullscreen */
+        .fullscreen-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            cursor: pointer;
+        }
+        .fullscreen-overlay.active {
+            display: flex;
+        }
+        .fullscreen-overlay img {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #444;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+        }
     </style>
 </head>
-    <h1>Chuck's DRRRRPPPYYY pg.</h1>
 <body>
+    <h1>Code Art Gallery</h1>
+
+    <div class="gallery">
+        <div class="art-piece glitch" onclick="openFullscreen(this)">
+            <img src="IMG_1763.JPG" alt="Light">
+            <div class="label">Glitch // Light Globe</div>
+        </div>
+
+        <div class="art-piece scanlines" onclick="openFullscreen(this)">
+            <img src="Keeper PCB Board.JPG" alt="PCB">
+            <div class="label">Scanlines // PCB Green</div>
+        </div>
+
+        <div class="art-piece invert-hue" onclick="openFullscreen(this)">
+            <img src="Alien Headshots Day.jpg" alt="Alien">
+            <div class="label">Invert + Hue // Alien</div>
+        </div>
+
+        <div class="art-piece duotone" onclick="openFullscreen(this)">
+            <img src="deniroenberg.jpg" alt="Deniroenberg">
+            <div class="label">Duotone // Warm PCB</div>
+        </div>
+
+        <div class="art-piece pixelate" onclick="openFullscreen(this)">
+            <img src="IMG_20250826_193816_897.jpg" alt="Blue PCB">
+            <div class="label">Pixelate // Blue PCB</div>
+        </div>
+
+        <div class="art-piece zoom-blur" onclick="openFullscreen(this)">
+            <img src="IMG_3359.JPG" alt="Mannequin">
+            <div class="label">Zoom Blur // Mannequin</div>
+        </div>
+
+        <div class="art-piece ascii-style" onclick="openFullscreen(this)">
+            <img src="IMG_3365.JPG" alt="Hex Lights">
+            <div class="label">ASCII // Hex Lights</div>
+        </div>
+
+        <div class="art-piece rgb-split" style="background-image: url('IMG_3369.JPG'); background-size: cover;" onclick="openFullscreen(this)">
+            <img src="IMG_3369.JPG" alt="Desk Setup">
+            <div class="label">RGB Split // Desk</div>
+        </div>
+    </div>
+
+    <div class="fullscreen-overlay" onclick="closeFullscreen()">
+        <img src="" alt="Fullscreen">
+    </div>
+
+    <footer>hover for effects // click for fullscreen</footer>
+
+    <script>
+        function openFullscreen(el) {
+            const img = el.querySelector('img');
+            const overlay = document.querySelector('.fullscreen-overlay');
+            overlay.querySelector('img').src = img.src;
+            overlay.classList.add('active');
+        }
+
+        function closeFullscreen() {
+            document.querySelector('.fullscreen-overlay').classList.remove('active');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeFullscreen();
+        });
+    </script>
 </body>
 </html>
